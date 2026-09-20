@@ -51,15 +51,6 @@ export const LevelPlayModal: React.FC<LevelPlayModalProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const modalBodyRef = useRef<HTMLDivElement>(null);
 
-  // Prevent background page from scrolling while modal is open
-  useEffect(() => {
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, []);
-
   // Ensure internal scroll resets to top when opening a level or switching tabs
   useEffect(() => {
     if (modalBodyRef.current) {
@@ -214,19 +205,15 @@ export const LevelPlayModal: React.FC<LevelPlayModalProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut' }}
-      className={`fixed inset-0 z-50 bg-[#1a0f08]/85 backdrop-blur-sm flex items-center justify-center overflow-hidden transition-all ${
+      className={`fixed inset-0 z-50 bg-[#1a0f08]/85 backdrop-blur-sm flex items-start justify-center transition-all ${
         isFullscreen ? 'p-0' : 'p-2 sm:p-3 md:p-4'
       }`}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.98 }}
-        transition={{ duration: 0.22, ease: 'easeOut' }}
+      <div
         className={`parchment-sheet shadow-2xl flex flex-col overflow-hidden text-[#292218] transition-all duration-200 ${
           isFullscreen
             ? 'w-full h-full max-w-none rounded-none border-0'
-            : 'w-full max-w-[98vw] 2xl:max-w-[96vw] h-[calc(100vh-1rem)] sm:h-[calc(100vh-1.5rem)] md:h-[calc(100vh-2rem)] border-2 border-[#b8864a] rounded-2xl sm:rounded-3xl'
+            : 'w-full max-w-[98vw] 2xl:max-w-[96vw] h-[calc(100vh-1rem)] sm:h-[calc(100vh-1.5rem)] md:h-[calc(100vh-1.5rem)] lg:h-[calc(100vh-2rem)] border-2 border-[#b8864a] rounded-2xl sm:rounded-3xl'
         }`}
       >
         {/* Modal Header (Leather & Brass Bar) */}
@@ -680,7 +667,7 @@ export const LevelPlayModal: React.FC<LevelPlayModalProps> = ({
             </div>
           </div>
         )}
-      </motion.div>
+      </div>
     </motion.div>
   );
 };

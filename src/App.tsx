@@ -33,6 +33,7 @@ import { CheatSheetModal } from './components/CheatSheetModal';
 import { ProfileModal } from './components/ProfileModal';
 import { AdventurerLicenseModal } from './components/AdventurerLicenseModal';
 import { AnimatePresence } from 'motion/react';
+import { createPortal } from 'react-dom';
 
 export default function App() {
   const [progress, setProgress] = useState<UserProgress>(() => loadProgress());
@@ -336,99 +337,102 @@ export default function App() {
         </div>
       </footer>
 
-      {/* MODALS */}
-      <AnimatePresence>
-        {/* Active Level Playing Modal */}
-        {selectedLevel && (
-          <LevelPlayModal
-            key="level-play-modal"
-            level={selectedLevel}
-            onClose={() => setSelectedLevel(null)}
-            onCompleteLevel={handleLevelCompleted}
-          />
-        )}
+      {/* MODALS (Portaled directly to document.body to stay strictly attached to viewport) */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {/* Active Level Playing Modal */}
+          {selectedLevel && (
+            <LevelPlayModal
+              key="level-play-modal"
+              level={selectedLevel}
+              onClose={() => setSelectedLevel(null)}
+              onCompleteLevel={handleLevelCompleted}
+            />
+          )}
 
-        {/* Level Completed Celebration Modal */}
-        {completedLevelSummary && (
-          <LevelCompleteModal
-            key="level-complete-modal"
-            level={completedLevelSummary.level}
-            stars={completedLevelSummary.stars}
-            xpEarned={completedLevelSummary.xpEarned}
-            unlockedBadges={completedLevelSummary.unlockedBadges}
-            isAllCompleted={isAllCampaignCompleted}
-            onOpenLicense={() => {
-              setCompletedLevelSummary(null);
-              setIsLicenseOpen(true);
-            }}
-            onContinue={() => setCompletedLevelSummary(null)}
-          />
-        )}
+          {/* Level Completed Celebration Modal */}
+          {completedLevelSummary && (
+            <LevelCompleteModal
+              key="level-complete-modal"
+              level={completedLevelSummary.level}
+              stars={completedLevelSummary.stars}
+              xpEarned={completedLevelSummary.xpEarned}
+              unlockedBadges={completedLevelSummary.unlockedBadges}
+              isAllCompleted={isAllCampaignCompleted}
+              onOpenLicense={() => {
+                setCompletedLevelSummary(null);
+                setIsLicenseOpen(true);
+              }}
+              onContinue={() => setCompletedLevelSummary(null)}
+            />
+          )}
 
-        {/* Sandbox Terminal Playground Modal */}
-        {isSandboxOpen && (
-          <SandboxModal
-            key="sandbox-modal"
-            initialCode={sandboxInitialCode}
-            onClose={() => {
-              setIsSandboxOpen(false);
-              setSandboxInitialCode(null);
-            }}
-            onCodeExecuted={handleSandboxCodeExecuted}
-          />
-        )}
+          {/* Sandbox Terminal Playground Modal */}
+          {isSandboxOpen && (
+            <SandboxModal
+              key="sandbox-modal"
+              initialCode={sandboxInitialCode}
+              onClose={() => {
+                setIsSandboxOpen(false);
+                setSandboxInitialCode(null);
+              }}
+              onCodeExecuted={handleSandboxCodeExecuted}
+            />
+          )}
 
-        {/* Badges Gallery Modal */}
-        {isBadgesOpen && (
-          <BadgesModal
-            key="badges-modal"
-            unlockedBadgeIds={progress.unlockedBadges}
-            onClose={() => setIsBadgesOpen(false)}
-          />
-        )}
+          {/* Badges Gallery Modal */}
+          {isBadgesOpen && (
+            <BadgesModal
+              key="badges-modal"
+              unlockedBadgeIds={progress.unlockedBadges}
+              onClose={() => setIsBadgesOpen(false)}
+            />
+          )}
 
-        {/* CheatSheet / Syntax Reference Modal */}
-        {isCheatSheetOpen && (
-          <CheatSheetModal
-            key="cheatsheet-modal"
-            onClose={() => setIsCheatSheetOpen(false)}
-            onOpenSandboxWithCode={handleOpenSandboxWithSnippet}
-          />
-        )}
+          {/* CheatSheet / Syntax Reference Modal */}
+          {isCheatSheetOpen && (
+            <CheatSheetModal
+              key="cheatsheet-modal"
+              onClose={() => setIsCheatSheetOpen(false)}
+              onOpenSandboxWithCode={handleOpenSandboxWithSnippet}
+            />
+          )}
 
-        {/* Profile & Save Transfer Modal */}
-        {isProfileOpen && (
-          <ProfileModal
-            key="profile-modal"
-            progress={progress}
-            isAllCompleted={isAllCampaignCompleted}
-            onOpenLicense={() => {
-              setIsProfileOpen(false);
-              setIsLicenseOpen(true);
-            }}
-            onClose={() => setIsProfileOpen(false)}
-            onUpdateProgress={(updated) => {
-              setProgress(updated);
-              saveProgress(updated);
-            }}
-          />
-        )}
+          {/* Profile & Save Transfer Modal */}
+          {isProfileOpen && (
+            <ProfileModal
+              key="profile-modal"
+              progress={progress}
+              isAllCompleted={isAllCampaignCompleted}
+              onOpenLicense={() => {
+                setIsProfileOpen(false);
+                setIsLicenseOpen(true);
+              }}
+              onClose={() => setIsProfileOpen(false)}
+              onUpdateProgress={(updated) => {
+                setProgress(updated);
+                saveProgress(updated);
+              }}
+            />
+          )}
 
-        {/* Adventurer License & Certificate PDF Modal */}
-        {isLicenseOpen && (
-          <AdventurerLicenseModal
-            key="license-modal"
-            progress={progress}
-            onClose={() => setIsLicenseOpen(false)}
-            onUpdateName={(newName) => {
-              updateProgressAndSave((prev) => ({
-                ...prev,
-                userName: newName,
-              }));
-            }}
-          />
-        )}
-      </AnimatePresence>
+          {/* Adventurer License & Certificate PDF Modal */}
+          {isLicenseOpen && (
+            <AdventurerLicenseModal
+              key="license-modal"
+              progress={progress}
+              onClose={() => setIsLicenseOpen(false)}
+              onUpdateName={(newName) => {
+                updateProgressAndSave((prev) => ({
+                  ...prev,
+                  userName: newName,
+                }));
+              }}
+            />
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
     </div>
   );
