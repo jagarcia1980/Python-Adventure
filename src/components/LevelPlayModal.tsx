@@ -49,6 +49,23 @@ export const LevelPlayModal: React.FC<LevelPlayModalProps> = ({
   const [d20BonusXp, setD20BonusXp] = useState<number>(0);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const modalBodyRef = useRef<HTMLDivElement>(null);
+
+  // Prevent background page from scrolling while modal is open
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
+
+  // Ensure internal scroll resets to top when opening a level or switching tabs
+  useEffect(() => {
+    if (modalBodyRef.current) {
+      modalBodyRef.current.scrollTop = 0;
+    }
+  }, [level.id, activeTab]);
 
   useEffect(() => {
     setUserCode(cfg.starterCode);
@@ -197,19 +214,19 @@ export const LevelPlayModal: React.FC<LevelPlayModalProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.22, ease: 'easeOut' }}
-      className={`fixed inset-0 z-50 bg-[#1a0f08]/85 backdrop-blur-sm flex items-center justify-center overflow-y-auto transition-all ${
-        isFullscreen ? 'p-0' : 'p-1.5 sm:p-3 md:p-4'
+      className={`fixed inset-0 z-50 bg-[#1a0f08]/85 backdrop-blur-sm flex items-center justify-center overflow-hidden transition-all ${
+        isFullscreen ? 'p-0' : 'p-2 sm:p-3 md:p-4'
       }`}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 8 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 8 }}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.98 }}
         transition={{ duration: 0.22, ease: 'easeOut' }}
         className={`parchment-sheet shadow-2xl flex flex-col overflow-hidden text-[#292218] transition-all duration-200 ${
           isFullscreen
-            ? 'w-full h-full max-w-none max-h-none rounded-none border-0'
-            : 'w-full max-w-[97vw] 2xl:max-w-[95vw] max-h-[96vh] border-2 border-[#b8864a] rounded-2xl sm:rounded-3xl'
+            ? 'w-full h-full max-w-none rounded-none border-0'
+            : 'w-full max-w-[98vw] 2xl:max-w-[96vw] h-[calc(100vh-1rem)] sm:h-[calc(100vh-1.5rem)] md:h-[calc(100vh-2rem)] border-2 border-[#b8864a] rounded-2xl sm:rounded-3xl'
         }`}
       >
         {/* Modal Header (Leather & Brass Bar) */}
@@ -289,7 +306,7 @@ export const LevelPlayModal: React.FC<LevelPlayModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <div ref={modalBodyRef} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-6">
           {/* RPG Encounter Briefing Card */}
           {level.rpgContext && (
             <div className="rounded-2xl border-2 border-[#b8864a] bg-[#f5ecdd] overflow-hidden shadow-md w-full">
