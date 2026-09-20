@@ -1,0 +1,6 @@
+{
+  "name": "Python Adventure",
+  "description": "Aprende python jugando a un MMRPG - CDPC 1 Bachillerato I.E.S Virgen de la Victoria",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
